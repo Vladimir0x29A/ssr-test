@@ -1,9 +1,0 @@
-@media screen and (max-width: 1200px) {
-    .wrapper {
-        display: block;
-    }
-}
-
-.wrapper {
-    display: flex;
-}

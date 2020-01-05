@@ -1,3 +1,3 @@
-let add = (a, b) => a + b;
+const fun = (a, b) => a + b;
 
-console.log(add(2, 6));
+console.log(fun(5, 11));
