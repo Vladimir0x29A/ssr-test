@@ -29,6 +29,15 @@ module.exports = {
         exclude: '/node_modules',
       },
       {
+        test: /\.vue$/i,
+        loader: 'vue-loader',
+        options: {
+          loader: {
+            scss: 'vue-style-loader!css-loader!sass-loader',
+          },
+        },
+      },
+      {
         test: /\.(png|jpe?g|gif|svg)$/i,
         loader: 'file-loader',
         options: {
@@ -64,6 +73,11 @@ module.exports = {
         ],
       },
     ],
+  },
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.js',
+    },
   },
   plugins: [
     new MiniCssExtractPlugin({
