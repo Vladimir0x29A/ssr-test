@@ -2,6 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
 const paths = {
   src: path.join(__dirname, '../src'),
@@ -17,9 +18,21 @@ module.exports = {
     app: paths.src,
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[hash].js',
     path: paths.dist,
     publicPath: '/',
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          name: 'vendors',
+          test: /node_modules/,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
   },
   module: {
     rules: [
@@ -31,16 +44,37 @@ module.exports = {
       {
         test: /\.vue$/i,
         loader: 'vue-loader',
-        options: {
+        /*options: {
           loader: {
             scss: 'vue-style-loader!css-loader!sass-loader',
           },
-        },
+        },*/
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/i,
-        loader: 'file-loader',
+        loader: 'url-loader',
         options: {
+          limit: false,
+          name: '[name].[ext]',
+        },
+      },
+      {
+        test: /\.(ttf|woff2?|eot)$/i,
+        loader: 'url-loader',
+        options: {
+          limit: false,
           name: '[name].[ext]',
         },
       },
@@ -60,7 +94,7 @@ module.exports = {
             options: {
               sourceMap: true,
               config: {
-                path: `${paths.src}/postcss.config.js`,
+                path: './postcss.config.js',
               },
             },
           },
@@ -76,15 +110,16 @@ module.exports = {
   },
   resolve: {
     alias: {
+      '@': 'src',
       'vue$': 'vue/dist/vue.js',
     },
   },
   plugins: [
+    new VueLoaderPlugin(),
     new MiniCssExtractPlugin({
-      filename: '[name].css',
+      filename: '[name].[hash].css',
     }),
     new HtmlWebpackPlugin({
-      hash: false,
       template: `${paths.src}/index.html`,
       filename: 'index.html',
     }),
@@ -92,6 +127,10 @@ module.exports = {
       {
         from: `${paths.src}/assets/images`,
         to: 'img',
+      },
+      {
+        from: `${paths.src}/assets/fonts`,
+        to: 'fonts',
       },
     ]),
   ],
